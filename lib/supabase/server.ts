@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import type { Database } from "@/types/database.types";
 import { getSupabaseEnv } from "./env";
 
@@ -10,6 +11,11 @@ import { getSupabaseEnv } from "./env";
  * ログイン中のユーザーの権限で動くため、RLS により本人のデータだけを操作できる。
  */
 export async function createClient() {
+  // Supabase はセッションの有効期限の確認に現在時刻（Date.now()）を使う。
+  // Cache Components では事前レンダリング中の現在時刻の参照がエラーになるため、
+  // connection() でリクエスト時にだけ実行されるようにする。
+  await connection();
+
   const { url, anonKey } = getSupabaseEnv();
   const cookieStore = await cookies();
 
