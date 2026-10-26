@@ -1,0 +1,5 @@
+# Supabase CLI が生成する型定義（npm run db:types で上書きされるため整形しない）
+types/database.types.ts
+
+# Supabase CLI の作業用ファイル
+supabase/.temp/
