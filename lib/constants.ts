@@ -1,2 +1,2 @@
-/** サービス名（アプリ名は未決定のため仮の名称。決まったらここだけ変更する） */
-export const APP_NAME = "家計決算ノート";
+/** サービス名（画面やブラウザのタブに表示する名前は、すべてこの定数を使う） */
+export const APP_NAME = "House Bookkeeping";
