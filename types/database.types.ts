@@ -266,6 +266,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_journal_line_totals: {
+        Args: { p_end_date: string; p_start_date: string }
+        Returns: {
+          account_id: string
+          credit_total: number
+          debit_total: number
+          sub_account_id: string
+        }[]
+      }
       save_journal: {
         Args: {
           p_description: string

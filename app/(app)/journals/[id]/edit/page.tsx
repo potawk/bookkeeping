@@ -6,7 +6,8 @@ import { JournalForm } from "@/components/journals/journal-form";
 import { TextLink } from "@/components/ui/text-link";
 import { updateJournal } from "@/lib/journals/actions";
 import { getSideLines } from "@/lib/journals/display";
-import { getJournal, listJournalAccountOptions } from "@/lib/journals/queries";
+import { listAccountsWithSubAccounts } from "@/lib/accounts/queries";
+import { getJournal } from "@/lib/journals/queries";
 
 export const metadata: Metadata = {
   title: "仕訳の編集",
@@ -36,7 +37,7 @@ async function EditJournalForm({
   const { id } = await params;
   const [journal, accounts] = await Promise.all([
     getJournal(id),
-    listJournalAccountOptions(),
+    listAccountsWithSubAccounts(),
   ]);
   if (!journal) notFound();
 

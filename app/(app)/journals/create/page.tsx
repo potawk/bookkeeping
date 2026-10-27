@@ -5,7 +5,7 @@ import { FormSkeleton } from "@/components/journals/form-skeleton";
 import { JournalForm } from "@/components/journals/journal-form";
 import { isValidDate, todayInTokyo } from "@/lib/dates";
 import { createJournal } from "@/lib/journals/actions";
-import { listJournalAccountOptions } from "@/lib/journals/queries";
+import { listAccountsWithSubAccounts } from "@/lib/accounts/queries";
 
 export const metadata: Metadata = {
   title: "仕訳の作成",
@@ -37,7 +37,7 @@ async function CreateJournalForm({
   // 日付の指定がなければ今日にする（リクエスト時に計算する）
   await connection();
   const entryDate = isValidDate(date) ? date : todayInTokyo();
-  const accounts = await listJournalAccountOptions();
+  const accounts = await listAccountsWithSubAccounts();
 
   return (
     <JournalForm

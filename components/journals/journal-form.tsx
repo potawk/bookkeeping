@@ -10,7 +10,8 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { ACCOUNT_CATEGORIES } from "@/lib/accounts/categories";
 import { formatYen, parseAmount } from "@/lib/format";
 import { initialFormState, type FormState } from "@/lib/form-state";
-import type { EntrySide, JournalAccountOption } from "@/lib/journals/queries";
+import type { AccountWithSubAccounts } from "@/lib/accounts/queries";
+import type { EntrySide } from "@/lib/journals/queries";
 import {
   DESCRIPTION_MAX_LENGTH,
   type JournalFormValues,
@@ -20,7 +21,7 @@ type JournalFormProps = {
   /** 登録（createJournal）または更新（updateJournal に仕訳 ID を bind したもの） */
   action: (prevState: FormState, formData: FormData) => Promise<FormState>;
   defaultValues: JournalFormValues;
-  accounts: JournalAccountOption[];
+  accounts: AccountWithSubAccounts[];
   submitLabel: string;
   pendingLabel: string;
   cancelHref: string;
@@ -167,7 +168,7 @@ export function JournalForm({
 
 type EntrySideFieldsProps = {
   side: EntrySide;
-  accounts: JournalAccountOption[];
+  accounts: AccountWithSubAccounts[];
   accountId: string;
   subAccountId: string;
   amount: string;

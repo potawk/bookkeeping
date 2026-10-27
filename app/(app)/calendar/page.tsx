@@ -3,9 +3,16 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { MonthCalendar } from "@/components/journals/month-calendar";
 import { ButtonLink } from "@/components/ui/button-link";
-import { addMonths, isValidMonth, toMonth, todayInTokyo } from "@/lib/dates";
+import {
+  addMonths,
+  getMonthRange,
+  isValidMonth,
+  toMonth,
+  todayInTokyo,
+} from "@/lib/dates";
 import { formatMonth, formatYen } from "@/lib/format";
-import { getMonthlyCalendarData } from "@/lib/journals/queries";
+import { getJournalCountsByDate } from "@/lib/journals/queries";
+import { getProfitAndLoss } from "@/lib/reports/queries";
 
 export const metadata: Metadata = {
   title: "カレンダー",
@@ -36,8 +43,12 @@ async function CalendarContent({
   await connection();
   const today = todayInTokyo();
   const month = isValidMonth(monthParam) ? monthParam : toMonth(today);
-  const data = await getMonthlyCalendarData(month);
-  const netIncome = data.revenueTotal - data.expenseTotal;
+  const { start, end } = getMonthRange(month);
+  // 当月の集計は損益計算書と同じ処理で求め、レポートの金額と必ず一致させる
+  const [journalCounts, summary] = await Promise.all([
+    getJournalCountsByDate(month),
+    getProfitAndLoss(start, end),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -72,7 +83,7 @@ async function CalendarContent({
       <MonthCalendar
         month={month}
         today={today}
-        journalCounts={data.journalCounts}
+        journalCounts={journalCounts}
       />
       <p className="text-sm leading-relaxed text-gray-600">
         日付を選ぶと、その日の仕訳一覧を表示します。数字のバッジはその日の仕訳件数です。
@@ -89,11 +100,13 @@ async function CalendarContent({
           {formatMonth(month)}の集計
         </h2>
         <dl className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <SummaryItem label="収益合計" amount={data.revenueTotal} />
-          <SummaryItem label="費用合計" amount={data.expenseTotal} />
+          <SummaryItem label="収益合計" amount={summary.revenueTotal} />
+          <SummaryItem label="費用合計" amount={summary.expenseTotal} />
           <SummaryItem
-            label={netIncome < 0 ? "当期純損益（純損失）" : "当期純損益"}
-            amount={netIncome}
+            label={
+              summary.netIncome < 0 ? "当期純損益（純損失）" : "当期純損益"
+            }
+            amount={summary.netIncome}
             emphasized
           />
         </dl>

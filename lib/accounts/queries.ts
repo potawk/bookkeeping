@@ -25,6 +25,41 @@ export type AccountDetail = {
   subAccounts: SubAccountDetail[];
 };
 
+/** 勘定科目と、その補助科目（仕訳フォームの選択肢・決算書の集計に使う） */
+export type AccountWithSubAccounts = {
+  id: string;
+  name: string;
+  category: AccountCategory;
+  subAccounts: { id: string; name: string }[];
+};
+
+/** 全区分の勘定科目（区分順・表示順、補助科目つき）。RLS により本人の科目だけが返る */
+export async function listAccountsWithSubAccounts(): Promise<
+  AccountWithSubAccounts[]
+> {
+  const supabase = await createClient();
+  // category は enum の定義順（資産・負債・純資産・収益・費用）で並ぶ
+  const { data, error } = await supabase
+    .from("accounts")
+    .select("id, name, category, sub_accounts(id, name, sort_order)")
+    .order("category")
+    .order("sort_order")
+    .order("name")
+    .order("sort_order", { referencedTable: "sub_accounts" });
+
+  if (error) throw error;
+
+  return data.map((account) => ({
+    id: account.id,
+    name: account.name,
+    category: account.category,
+    subAccounts: account.sub_accounts.map((sub) => ({
+      id: sub.id,
+      name: sub.name,
+    })),
+  }));
+}
+
 /** 区分ごとの勘定科目一覧（補助科目の数つき）。RLS により本人の科目だけが返る */
 export async function listAccounts(
   category: AccountCategory,
