@@ -77,10 +77,17 @@ export const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-/** 仕訳の画面（/journals/...）はカレンダーのまとまりに含める */
+/**
+ * メニュー項目をアクティブ表示にするか判定する。
+ * 仕訳の画面（/journals/...）はカレンダー、期首残高入力（/opening-balances）は
+ * マイページから開く画面なのでマイページのまとまりに含める。
+ */
 export function isActiveItem(item: NavItem, pathname: string | null): boolean {
   if (!pathname) return false;
   if (item.matchPrefix === "/calendar" && pathname.startsWith("/journals")) {
+    return true;
+  }
+  if (item.matchPrefix === "/mypage" && pathname === "/opening-balances") {
     return true;
   }
   return (

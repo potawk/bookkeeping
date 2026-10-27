@@ -275,6 +275,10 @@ export type Database = {
         }
         Returns: string
       }
+      save_opening_balances: {
+        Args: { p_opening_date: string; p_rows: Json }
+        Returns: undefined
+      }
     }
     Enums: {
       account_category: "asset" | "liability" | "equity" | "revenue" | "expense"
