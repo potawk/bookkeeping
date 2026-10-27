@@ -1,9 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/uuid";
 import type { AccountCategory } from "./categories";
-
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export type AccountListItem = {
   id: string;
@@ -73,7 +71,7 @@ async function countUsage(
 export async function getAccountDetail(
   id: string,
 ): Promise<AccountDetail | null> {
-  if (!UUID_REGEX.test(id)) return null;
+  if (!isUuid(id)) return null;
 
   const supabase = await createClient();
   const { data: account, error } = await supabase

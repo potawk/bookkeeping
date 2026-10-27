@@ -35,7 +35,11 @@ async function AccountDetailContent({
 
   return (
     <div className="space-y-8">
-      <TextLink href={`/accounts?category=${account.category}`}>
+      {/* inline-block: 親の space-y の余白（下マージン）を効かせる */}
+      <TextLink
+        href={`/accounts?category=${account.category}`}
+        className="inline-block"
+      >
         ← {getCategoryLabel(account.category)}の勘定科目一覧へ戻る
       </TextLink>
 
