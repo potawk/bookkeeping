@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { LogoutButton } from "@/components/auth/logout-button";
+import { ProfileForm } from "@/components/mypage/profile-form";
 import { ButtonLink } from "@/components/ui/button-link";
 import { getCurrentUser } from "@/lib/auth/user";
 import { formatDate, formatYen } from "@/lib/format";
@@ -10,8 +12,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * マイページ（/mypage）。ユーザー情報と期首残高の概要を表示し、期首残高入力画面へのリンクを置く。
- * ユーザー情報の編集はフェーズ 7 で実装する。
+ * マイページ（/mypage）。ユーザー情報の表示・編集、期首残高の概要と期首残高入力画面へのリンク、ログアウトボタンを置く。
  */
 export default function MyPage() {
   return (
@@ -23,10 +24,56 @@ export default function MyPage() {
       <Suspense fallback={<SectionSkeleton label="ユーザー情報を読み込み中" />}>
         <UserInfo />
       </Suspense>
+      <Suspense
+        fallback={
+          <SectionSkeleton label="ユーザー情報の編集フォームを読み込み中" />
+        }
+      >
+        <ProfileEdit />
+      </Suspense>
       <Suspense fallback={<SectionSkeleton label="期首残高を読み込み中" />}>
         <OpeningBalanceInfo />
       </Suspense>
+      <section
+        aria-labelledby="logout-heading"
+        className="flex flex-col gap-4 rounded-2xl border border-gray-300 bg-white p-6 shadow-md sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="space-y-1">
+          <h2
+            id="logout-heading"
+            className="text-xl font-semibold leading-snug text-gray-900"
+          >
+            ログアウト
+          </h2>
+          <p className="text-sm leading-relaxed text-gray-600">
+            ログアウトすると、ログイン画面に戻ります。
+          </p>
+        </div>
+        <LogoutButton />
+      </section>
     </div>
+  );
+}
+
+/** ユーザー情報の編集フォーム（現在のユーザー名・メールアドレスを初期値にする） */
+async function ProfileEdit() {
+  const user = await getCurrentUser();
+
+  return (
+    <section
+      aria-labelledby="profile-edit-heading"
+      className="rounded-2xl border border-gray-300 bg-white p-6 shadow-md"
+    >
+      <h2
+        id="profile-edit-heading"
+        className="mb-4 text-xl font-semibold leading-snug text-gray-900"
+      >
+        ユーザー情報の編集
+      </h2>
+      <ProfileForm
+        defaultValues={{ userName: user.userName, email: user.email }}
+      />
+    </section>
   );
 }
 

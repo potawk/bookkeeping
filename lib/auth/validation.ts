@@ -18,6 +18,12 @@ export type SignUpInput = SignInInput & {
   passwordConfirm: string;
 };
 
+/** マイページのユーザー情報編集フォームの入力値 */
+export type ProfileInput = {
+  userName: string;
+  email: string;
+};
+
 /** 入力欄ごとのエラーメッセージ（エラーがない欄は含まない） */
 export type FieldErrors<T> = Partial<Record<keyof T, string>>;
 
@@ -25,6 +31,14 @@ function validateEmail(email: string): string | undefined {
   if (!email) return "メールアドレスを入力してください。";
   if (!EMAIL_REGEX.test(email))
     return "メールアドレスの形式が正しくありません。";
+  return undefined;
+}
+
+function validateUserName(userName: string): string | undefined {
+  if (!userName) return "ユーザー名を入力してください。";
+  if (userName.length > USER_NAME_MAX_LENGTH) {
+    return `ユーザー名は${USER_NAME_MAX_LENGTH}文字以内で入力してください。`;
+  }
   return undefined;
 }
 
@@ -49,11 +63,8 @@ export function validateSignIn(input: SignInInput): FieldErrors<SignInInput> {
 export function validateSignUp(input: SignUpInput): FieldErrors<SignUpInput> {
   const errors: FieldErrors<SignUpInput> = {};
 
-  if (!input.userName) {
-    errors.userName = "ユーザー名を入力してください。";
-  } else if (input.userName.length > USER_NAME_MAX_LENGTH) {
-    errors.userName = `ユーザー名は${USER_NAME_MAX_LENGTH}文字以内で入力してください。`;
-  }
+  const userNameError = validateUserName(input.userName);
+  if (userNameError) errors.userName = userNameError;
 
   const emailError = validateEmail(input.email);
   if (emailError) errors.email = emailError;
@@ -67,5 +78,17 @@ export function validateSignUp(input: SignUpInput): FieldErrors<SignUpInput> {
     errors.passwordConfirm = "パスワードが一致しません。";
   }
 
+  return errors;
+}
+
+/** マイページのユーザー情報編集フォームの入力値を検証する */
+export function validateProfile(
+  input: ProfileInput,
+): FieldErrors<ProfileInput> {
+  const errors: FieldErrors<ProfileInput> = {};
+  const userNameError = validateUserName(input.userName);
+  if (userNameError) errors.userName = userNameError;
+  const emailError = validateEmail(input.email);
+  if (emailError) errors.email = emailError;
   return errors;
 }

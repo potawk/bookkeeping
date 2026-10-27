@@ -1,7 +1,7 @@
 /**
  * useActionState で Server Action から受け取るフォームの結果。
  * - fieldErrors: 入力欄ごとのエラーメッセージ
- * - message: フォーム全体のエラーメッセージ（保存失敗など）
+ * - message: フォーム全体のメッセージ（保存失敗などのエラー。ok が true のときは完了のお知らせ）
  * - values: 送信後も入力内容を残すための値
  * - ok: 処理が成功したとき true
  */

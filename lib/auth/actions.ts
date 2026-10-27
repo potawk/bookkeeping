@@ -1,13 +1,17 @@
 "use server";
 
 import type { AuthError } from "@supabase/supabase-js";
+import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
-import { getFormString as getString } from "@/lib/form-state";
+import { getFormString as getString, type FormState } from "@/lib/form-state";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "./user";
 import {
+  validateProfile,
   validateSignIn,
   validateSignUp,
   type FieldErrors,
+  type ProfileInput,
   type SignInInput,
   type SignUpInput,
 } from "./validation";
@@ -27,6 +31,9 @@ function toErrorMessage(error: AuthError): string {
     case "user_already_exists":
     case "email_exists":
       return "このメールアドレスはすでに登録されています。";
+    case "email_address_invalid":
+      // 送信できないアドレス（存在しないドメインなど）。メールアドレスの変更時は通知メールを送るため起こりうる
+      return "このメールアドレスにはメールを送信できないため、変更できません。別のメールアドレスを入力してください。";
     case "weak_password":
       return "パスワードが弱すぎます。別のパスワードを入力してください。";
     case "over_request_rate_limit":
@@ -93,6 +100,62 @@ export async function signUp(
   }
 
   redirect("/opening-balances");
+}
+
+/**
+ * マイページでユーザー名・メールアドレスを更新する。
+ * ユーザー名は profiles と user_metadata の両方を更新する。メールアドレスは Supabase Auth で変更し、
+ * 「Confirm email」がオフの設定のため確認メールなしですぐに切り替わる（次回から新しいアドレスでログインする）。
+ */
+export async function updateProfile(
+  _prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await getCurrentUser();
+  const input: ProfileInput = {
+    userName: getString(formData, "userName"),
+    email: getString(formData, "email"),
+  };
+  const values = { ...input };
+
+  const fieldErrors = validateProfile(input);
+  if (Object.keys(fieldErrors).length > 0) {
+    return { fieldErrors, values };
+  }
+
+  const emailChanged = input.email !== user.email;
+  const supabase = await createClient();
+
+  // 先に Auth を更新する（メールアドレスの重複などで失敗した場合は、ユーザー名も変えない）
+  const { error: authError } = await supabase.auth.updateUser({
+    ...(emailChanged && { email: input.email }),
+    data: { user_name: input.userName },
+  });
+  if (authError) {
+    return { fieldErrors: {}, values, message: toErrorMessage(authError) };
+  }
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({ user_name: input.userName })
+    .eq("id", user.id);
+  if (profileError) {
+    return {
+      fieldErrors: {},
+      values,
+      message: "保存に失敗しました。時間をおいて再度お試しください。",
+    };
+  }
+
+  refresh();
+  return {
+    fieldErrors: {},
+    values,
+    ok: true,
+    message: emailChanged
+      ? "ユーザー情報を保存しました。次回から新しいメールアドレスでログインしてください。"
+      : "ユーザー情報を保存しました。",
+  };
 }
 
 /** ログアウト */
