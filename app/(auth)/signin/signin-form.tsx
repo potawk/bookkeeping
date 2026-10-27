@@ -37,7 +37,7 @@ export function SignInForm() {
         required
         error={state.fieldErrors.password}
       />
-      <SubmitButton pending={pending} pendingLabel="ログイン中…">
+      <SubmitButton pending={pending} pendingLabel="ログイン中…" fullWidth>
         ログイン
       </SubmitButton>
     </form>

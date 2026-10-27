@@ -62,7 +62,7 @@ export function SignUpForm() {
         required
         error={state.fieldErrors.passwordConfirm}
       />
-      <SubmitButton pending={pending} pendingLabel="登録中…">
+      <SubmitButton pending={pending} pendingLabel="登録中…" fullWidth>
         新規登録
       </SubmitButton>
     </form>

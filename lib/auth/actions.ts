@@ -2,6 +2,7 @@
 
 import type { AuthError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { getFormString as getString } from "@/lib/form-state";
 import { createClient } from "@/lib/supabase/server";
 import {
   validateSignIn,
@@ -17,12 +18,6 @@ export type AuthFormState<T> = {
   fieldErrors: FieldErrors<T>;
   message?: string;
 };
-
-/** FormData から文字列を取り出す（未入力・ファイルは空文字にする） */
-function getString(formData: FormData, name: string): string {
-  const value = formData.get(name);
-  return typeof value === "string" ? value.trim() : "";
-}
 
 /** Supabase Auth のエラーを、画面に表示する日本語のメッセージに変換する */
 function toErrorMessage(error: AuthError): string {
