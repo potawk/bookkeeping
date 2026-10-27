@@ -1,19 +1,2 @@
+/* Tailwind CSS v4 の読み込み。配色などは各コンポーネントで Tailwind のユーティリティクラスを使い、独自の CSS は定義しない */
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}

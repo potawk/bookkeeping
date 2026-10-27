@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { AppLogo } from "@/components/layout/app-logo";
 import {
   BottomNavigation,
   SidebarNavigation,
 } from "@/components/layout/app-navigation";
-import { APP_NAME } from "@/lib/constants";
 
 /**
  * ログイン後の画面の共通レイアウト。
@@ -19,9 +19,9 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
         <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link
             href="/calendar"
-            className="rounded-lg text-xl font-bold leading-snug text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+            className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           >
-            {APP_NAME}
+            <AppLogo />
           </Link>
           <LogoutButton />
         </div>
