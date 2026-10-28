@@ -10,8 +10,6 @@ export type CurrentUser = {
   userName: string;
   /** 登録日時（ISO 8601 形式） */
   createdAt: string;
-  /** 最終ログイン日時（ISO 8601 形式） */
-  lastSignInAt: string | null;
 };
 
 /**
@@ -42,6 +40,5 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
     email: user.email ?? "",
     userName: profile?.user_name ?? "",
     createdAt: user.created_at,
-    lastSignInAt: user.last_sign_in_at ?? null,
   };
 });

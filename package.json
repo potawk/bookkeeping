@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:push": "supabase db push --linked",
-    "db:types": "supabase gen types typescript --linked > types/database.types.ts"
+    "db:types": "supabase gen types typescript --linked > types/database.types.ts",
+    "seed:demo": "node --env-file=.env.local scripts/seed-demo.mts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

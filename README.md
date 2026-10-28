@@ -1,36 +1,193 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Home Bookkeeping
 
-## Getting Started
+**「家計を“決算”しよう」**
 
-First, run the development server:
+企業会計と同じ複式簿記で記帳する Web 家計簿アプリです。日々の取引を借方・貸方の仕訳で記録し、お金の流れ（損益計算書）と、資産・負債の全体像（貸借対照表）をいつでも確認できます。
+
+## デモ
+
+- **デモ URL**: https://home-bookkeeping.vercel.app/
+- **デモアカウント**
+
+  | 項目           | 値                 |
+  | -------------- | ------------------ |
+  | メールアドレス | `demo@example.com` |
+  | パスワード     | `demo20261028`     |
+  - 期首日 2026年8月1日の期首残高と、2026年8〜10月の仕訳（68件）が登録されています。
+  - カレンダーで 2026年8〜10月を開く、損益計算書の期間を 2026-08-01〜2026-10-31 にする、などで内容を確認できます。
+  - ほかの方も使うアカウントのため、メールアドレスとパスワードは変更しないでください（`@example.com` のアドレスはメールを送信できないため、メールアドレスの変更はエラーになります）。
+
+## 要件定義
+
+### 目的
+
+単式の家計簿では「いくら使ったか（フロー）」しか分からず、「今どれだけの財産と借金があるか（ストック）」が見えません。Home Bookkeeping は、すべての取引を複式簿記の仕訳で記録することで、家計の **経営成績（損益計算書）** と **財政状態（貸借対照表）** を両方把握できるようにします。
+
+### 解決したい課題
+
+| 課題                                                                                         | 解決策                                                                                                   |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 単式の家計簿では収支しか分からず、財産の状態が見えない                                       | 全取引を仕訳で記録し、貸借対照表（資産・負債・純資産）と損益計算書（収益・費用）を自動で作成する         |
+| カード払いやローン返済で、支出の発生と口座からの引き落としの時期がずれ、収支が実態と合わない | 「未払金」「借入金」「立替金」などの科目で、発生時に費用を計上し、引き落とし時に負債を減らす形で記帳する |
+| 期間ごとの比較や推移が分かりにくい                                                           | 開始日・終了日を自由に指定した損益計算書と、任意の基準日の貸借対照表を作成できるようにする               |
+| 既存アプリの科目が固定されていて、自分の家計に合わない                                       | 勘定科目と補助科目（例：普通預金 → ○○銀行）を自由に追加・編集・削除できるようにする                      |
+
+### 想定するユーザー
+
+- 簿記3級〜2級程度の知識がある人、または簿記を勉強中で実生活でも使ってみたい人
+- クレジットカード払い・ローン返済・立替金など、現金以外の取引が多い人
+- 収支だけでなく、財産の状態（純資産）を把握したい人
+
+### 類似サービスとの違い
+
+- Android アプリ「複式家計簿」の考え方に近いが、端末に依存せず、PC・スマホのブラウザから同じ帳簿を使える
+- 事業者向けの会計ソフトより機能を家計向けに絞り込み、事業用の科目や画面を持たない
+- 銀行・カードと自動連携する家計簿アプリと異なり、自分で仕訳を入力する複式簿記で、貸借対照表の視点と期間を指定した決算ができる
+
+### 利用の流れ
+
+1. メールアドレスとパスワードで新規登録する（標準の勘定科目 28 科目が自動で作成される）
+2. 利用を始める日（期首日）の資産・負債の残高を入力する（差額は純資産の「元入金」として自動で計算される）
+3. 必要に応じて勘定科目・補助科目を追加・編集・削除する
+4. カレンダーで日付を選び、その日の仕訳を登録・編集・削除する
+5. 期間を指定して損益計算書を、基準日を指定して貸借対照表を確認する
+
+## 機能一覧
+
+| 機能               | 内容                                                                                                                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ユーザー認証       | 新規登録（ユーザー名・メールアドレス・パスワード）、ログイン、ログアウト。未ログインでログインが必要な画面を開くと、ログイン画面へ移動する                                                 |
+| カレンダー         | 月間カレンダーで仕訳のある日と件数を表示する。前月・翌月・今日（今月）への切り替え、当月の収益合計・費用合計・当期純損益の表示                                                             |
+| 仕訳               | 日別の仕訳一覧（前日・翌日への切り替え）、仕訳の登録・詳細表示・編集・削除。入力項目は日付・借方（勘定科目・補助科目・金額）・貸方（同）・摘要。借方と貸方の金額が一致しないと保存できない |
+| 勘定科目・補助科目 | 5区分（資産・負債・純資産・収益・費用）の勘定科目の登録・一覧・詳細・編集・削除と、科目ごとの補助科目の登録・編集・削除。仕訳や期首残高で使用中の科目は削除できない                        |
+| 期首残高           | 期首日と、資産・負債の科目（補助科目ごとも可）ごとの残高の登録・編集。資産合計・負債合計・純資産（元入金）をその場で計算して表示する                                                       |
+| 損益計算書         | 開始日〜終了日の収益・費用を勘定科目ごとに集計する。プリセット（今月・先月・今年・昨年）、補助科目別の内訳表示                                                                             |
+| 貸借対照表         | 基準日時点の資産・負債・純資産（元入金＋利益剰余金）を集計する。プリセット（今日・先月末・昨年末）、補助科目別の内訳表示、資産合計と負債・純資産合計の一致の確認                           |
+| マイページ         | ユーザー情報（ユーザー名・メールアドレス・登録日）の表示と編集、期首残高の概要、ログアウト                                                                                                 |
+| レスポンシブ対応   | PC は左のサイドバー、スマホは画面下部に固定したメニューで操作できる                                                                                                                        |
+
+決算書は保存せず、表示のたびに保存済みの仕訳から集計します。貸借対照表の純資産は「元入金（期首残高の資産 − 負債）＋ 利益剰余金（期首日から基準日までの収益 − 費用）」で計算するため、期末の繰越処理をしなくても作成できます。
+
+### 対象外とした機能
+
+銀行口座・クレジットカードとの自動連携、レシートの読み取り（OCR）、単式簿記の簡易入力モード、税務申告書類の作成。
+
+## 画面一覧
+
+| 画面                 | URL                   | ログイン |
+| -------------------- | --------------------- | -------- |
+| トップページ         | `/`                   | 不要     |
+| ログイン             | `/signin`             | 不要     |
+| 新規登録             | `/signup`             | 不要     |
+| カレンダー（ホーム） | `/calendar`           | 必要     |
+| 日別仕訳一覧         | `/calendar/[date]`    | 必要     |
+| 仕訳作成             | `/journals/create`    | 必要     |
+| 仕訳詳細             | `/journals/[id]`      | 必要     |
+| 仕訳編集             | `/journals/[id]/edit` | 必要     |
+| 勘定科目一覧         | `/accounts`           | 必要     |
+| 勘定科目作成         | `/accounts/create`    | 必要     |
+| 勘定科目詳細         | `/accounts/[id]`      | 必要     |
+| 勘定科目編集         | `/accounts/[id]/edit` | 必要     |
+| 期首残高入力         | `/opening-balances`   | 必要     |
+| 損益計算書           | `/reports/pl`         | 必要     |
+| 貸借対照表           | `/reports/bs`         | 必要     |
+| マイページ           | `/mypage`             | 必要     |
+
+## 使用技術
+
+### フレームワーク・ライブラリ
+
+| 名前                                                                                   | バージョン | 用途                                                                  |
+| -------------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------- |
+| [Next.js](https://nextjs.org/)（App Router）                                           | 16.4       | フレームワーク（Server Components・Server Actions・Cache Components） |
+| [React](https://react.dev/)                                                            | 19.3       | UI                                                                    |
+| [TypeScript](https://www.typescriptlang.org/)                                          | 5.9        | 型付け（strict モード）                                               |
+| [Tailwind CSS](https://tailwindcss.com/)                                               | 4.3        | スタイリング（`@tailwindcss/turbopack` で処理）                       |
+| [@supabase/supabase-js](https://github.com/supabase/supabase-js)                       | 2.118      | Supabase のクライアント                                               |
+| [@supabase/ssr](https://github.com/supabase/ssr)                                       | 0.12       | Cookie を使ったログイン状態の管理（サーバー側）                       |
+| [server-only](https://www.npmjs.com/package/server-only)                               | 0.0.1      | サーバー専用のコードがブラウザ向けに読み込まれるのを防ぐ              |
+| [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) | 2.122      | マイグレーションの反映、データベースの型定義の生成（開発用）          |
+| [ESLint](https://eslint.org/)（eslint-config-next）                                    | 9          | 静的解析（開発用）                                                    |
+| [Prettier](https://prettier.io/)                                                       | 3.9        | コードの整形（開発用）                                                |
+
+### 外部 API・サービス
+
+| 名前                              | 用途                                                                                                                                                                                    |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Supabase](https://supabase.com/) | **Supabase Auth**：メールアドレスとパスワードによる認証。**Supabase Database（PostgreSQL）**：データの保存。Row Level Security（RLS）で、本人のデータだけを読み書きできるようにしている |
+| [Vercel](https://vercel.com/)     | ホスティング（GitHub の main ブランチへの push で自動デプロイ）                                                                                                                         |
+
+## データベース
+
+Supabase（PostgreSQL）に次の6テーブルを作成しています。スキーマは [supabase/migrations/](supabase/migrations/) のマイグレーションファイルで管理しています。
+
+| テーブル           | 内容                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| `profiles`         | ユーザー名・期首日（Supabase Auth のユーザーと1対1）                     |
+| `accounts`         | 勘定科目（科目名・区分・表示順）                                         |
+| `sub_accounts`     | 補助科目（勘定科目ごと）                                                 |
+| `opening_balances` | 期首残高（勘定科目・補助科目・金額）                                     |
+| `journals`         | 仕訳（日付・摘要）                                                       |
+| `journal_lines`    | 仕訳明細（貸借区分・勘定科目・補助科目・金額）。複合仕訳にも対応できる形 |
+
+- すべてのテーブルに `user_id` を持たせ、RLS で本人の行だけを読み書きできるようにしています。
+- 仕訳の保存（貸借の一致の確認を含む）、期首残高の保存、決算書の集計はデータベース関数（RPC）で行います。
+- 使用中の勘定科目・補助科目の削除や、使用中の勘定科目の区分の変更は、データベース側でも拒否します。
+- 新規登録時に、トリガーでプロフィールと標準の勘定科目 28 科目を作成します。
+
+## ローカルでの起動方法
+
+Node.js 24 以上と、Supabase のプロジェクトが必要です。
 
 ```bash
+# 1. パッケージのインストール
+npm install
+
+# 2. 環境変数の設定（.env.local に Supabase の URL と anon キーを書く）
+cp .env.example .env.local
+
+# 3. Supabase のプロジェクトにリンクし、テーブル・関数・トリガーを作成する
+npx supabase link --project-ref <プロジェクトID>
+npm run db:push
+
+# 4. 開発サーバーの起動（http://localhost:3000）
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Supabase のダッシュボードで、Authentication → Sign In / Providers → Email の **Confirm email** をオフにしてください（新規登録の直後からログインできるようにするため）。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 環境変数
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| 名前                            | 内容                                                               |
+| ------------------------------- | ------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase のプロジェクト URL                                        |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase の anon キー                                              |
+| `DEMO_PASSWORD`                 | デモアカウントのパスワード（デモデータの投入スクリプトでのみ使う） |
 
-## Learn More
+### npm スクリプト
 
-To learn more about Next.js, take a look at the following resources:
+| コマンド            | 内容                                                                                         |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| `npm run dev`       | 開発サーバーの起動                                                                           |
+| `npm run build`     | 本番用のビルド（型チェックを含む）                                                           |
+| `npm run start`     | ビルドしたアプリの起動                                                                       |
+| `npm run lint`      | ESLint による静的解析                                                                        |
+| `npm run format`    | Prettier による整形（`format:check` は確認のみ）                                             |
+| `npm run db:push`   | マイグレーションを Supabase に反映                                                           |
+| `npm run db:types`  | データベースの型定義（`types/database.types.ts`）を生成                                      |
+| `npm run seed:demo` | デモアカウントを作成し（作成済みならログインし）、期首残高と 2026年8〜10月の仕訳を登録し直す |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ディレクトリ構成
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/
+  (auth)/          ログイン・新規登録画面
+  (app)/           ログイン後の画面（カレンダー・仕訳・勘定科目・期首残高・決算書・マイページ）
+  page.tsx         トップページ
+components/        画面の部品（ui/ は共通部品、それ以外は機能ごと）
+lib/               機能ごとのデータ取得（queries.ts）・更新（actions.ts）・入力値の検証（validation.ts）
+proxy.ts           ログイン状態の更新と、ログインが必要な画面の保護
+scripts/           デモデータの投入スクリプト
+supabase/          マイグレーション（テーブル・RLS・関数・トリガー）
+types/             データベースの型定義（Supabase CLI で生成）
+```
