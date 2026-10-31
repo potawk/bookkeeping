@@ -1,5 +1,5 @@
 /**
- * ボタン・ボタン型リンクの共通クラス（design_system.md「ボタン設計原則」）
+ * ボタン・ボタン型リンクの共通クラス（architecture/design_system.md「ボタン設計原則」）
  * - primary: 主要な操作（作成・保存）
  * - secondary: 補助的な操作（編集・キャンセル）
  * - danger: 削除などの取り消せない操作

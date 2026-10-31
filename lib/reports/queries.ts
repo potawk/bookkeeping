@@ -115,7 +115,7 @@ async function getOpeningEntries(): Promise<{
 }
 
 /**
- * 貸借対照表（基準日時点）。requirements.md 4.5 のとおり、
+ * 貸借対照表（基準日時点）。architecture/requirements.md 4.5 のとおり、
  * 資産・負債の残高＝期首残高＋期首日から基準日までの仕訳の増減、
  * 純資産＝元入金＋純資産科目への仕訳＋利益剰余金で計算する。
  */

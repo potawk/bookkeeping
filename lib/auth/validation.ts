@@ -1,8 +1,8 @@
-/** パスワードは半角英数字8文字以上（仕様書 2-2 のログイン・新規登録） */
+/** パスワードは半角英数字8文字以上（architecture/specification.md のログイン・新規登録） */
 export const PASSWORD_PATTERN = "[A-Za-z0-9]{8,}";
 export const PASSWORD_MIN_LENGTH = 8;
 
-/** ユーザー名は20文字以内（仕様書 2-2 の新規登録） */
+/** ユーザー名は20文字以内（architecture/specification.md の新規登録） */
 export const USER_NAME_MAX_LENGTH = 20;
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -1,4 +1,4 @@
-/** 入力欄・セレクトボックス共通のクラス（design_system.md「入力フィールド」） */
+/** 入力欄・セレクトボックス共通のクラス（architecture/design_system.md「入力フィールド」） */
 export function fieldClassName(hasError: boolean): string {
   return `h-12 w-full rounded-lg border bg-white px-4 text-base text-gray-900 placeholder-gray-500 outline-none transition-colors duration-150 ease-in-out focus:ring-2 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-600 ${
     hasError

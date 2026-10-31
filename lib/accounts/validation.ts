@@ -1,6 +1,6 @@
 import { isAccountCategory, type AccountCategory } from "./categories";
 
-/** 勘定科目名・補助科目名は20文字以内（仕様書 2-2） */
+/** 勘定科目名・補助科目名は20文字以内（architecture/specification.md） */
 export const ACCOUNT_NAME_MAX_LENGTH = 20;
 
 /** 科目名（勘定科目・補助科目共通）を検証し、エラーメッセージを返す */

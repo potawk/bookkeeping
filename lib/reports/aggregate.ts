@@ -29,7 +29,7 @@ export type AccountAmount = {
 const NO_SUB_ACCOUNT_NAME = "補助科目なし";
 
 /**
- * 区分に応じて残高（金額）を計算する（requirements.md 4.1）。
+ * 区分に応じて残高（金額）を計算する（architecture/requirements.md 4.1）。
  * 資産・費用は借方で増えるので「借方－貸方」、負債・純資産・収益は貸方で増えるので「貸方－借方」。
  */
 export function toCategoryAmount(

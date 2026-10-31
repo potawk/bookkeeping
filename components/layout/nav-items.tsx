@@ -26,7 +26,7 @@ function Icon({ children }: { children: ReactNode }) {
   );
 }
 
-/** ログイン後のナビゲーションメニューの項目（仕様書 2-2 の「ナビゲーションメニュー」） */
+/** ログイン後のナビゲーションメニューの項目（architecture/specification.md の「ナビゲーションメニュー」） */
 export const NAV_ITEMS: NavItem[] = [
   {
     href: "/calendar",

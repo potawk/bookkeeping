@@ -4,7 +4,7 @@ import { AppLogo } from "@/components/layout/app-logo";
 import { ButtonLink } from "@/components/ui/button-link";
 import { APP_NAME } from "@/lib/constants";
 
-/** アプリの特徴（requirements.md「1.5 提供価値」をもとにした説明） */
+/** アプリの特徴（architecture/requirements.md「1.5 提供価値」をもとにした説明） */
 const FEATURES: { title: string; description: string; icon: ReactNode }[] = [
   {
     title: "複式簿記で正確に記帳",
@@ -37,7 +37,7 @@ const FEATURES: { title: string; description: string; icon: ReactNode }[] = [
   },
 ];
 
-/** はじめ方（requirements.md「1.8 利用の流れ」） */
+/** はじめ方（architecture/requirements.md「1.8 利用の流れ」） */
 const STEPS = [
   {
     title: "新規登録",

@@ -7,8 +7,8 @@ type MonthCalendarProps = {
   month: string;
   /** 日本時間の今日（YYYY-MM-DD） */
   today: string;
-  /** 日付ごとの仕訳件数 */
-  journalCounts: Record<string, number>;
+  /** 日付ごとの仕訳件数（undefined の間は読み込み中として件数を表示しない） */
+  journalCounts?: Record<string, number>;
 };
 
 /** 曜日の文字色（日曜は赤、土曜は青。曜日名も表示するので色だけに頼らない） */
@@ -63,7 +63,7 @@ export function MonthCalendar({
                     <DayCell
                       date={date}
                       isToday={date === today}
-                      count={journalCounts[date] ?? 0}
+                      count={journalCounts ? (journalCounts[date] ?? 0) : null}
                     />
                   </td>
                 ) : (
@@ -90,13 +90,14 @@ function DayCell({
 }: {
   date: string;
   isToday: boolean;
-  count: number;
+  count: number | null;
 }) {
   const day = Number(date.slice(8, 10));
+  const hasJournals = count !== null && count > 0;
   const label = [
     formatDateWithWeekday(date),
     isToday ? "今日" : null,
-    count > 0 ? `仕訳${count}件` : "仕訳なし",
+    count === null ? null : count > 0 ? `仕訳${count}件` : "仕訳なし",
   ]
     .filter(Boolean)
     .join("、");
@@ -107,19 +108,19 @@ function DayCell({
       aria-label={label}
       aria-current={isToday ? "date" : undefined}
       className={`flex h-16 w-full flex-col items-center gap-1 p-1 transition-colors duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 sm:h-24 sm:items-start sm:p-2 ${
-        count > 0 ? "bg-blue-50 hover:bg-blue-100" : "hover:bg-blue-50"
+        hasJournals ? "bg-blue-50 hover:bg-blue-100" : "hover:bg-blue-50"
       }`}
     >
       <span
         className={`flex h-7 w-7 items-center justify-center rounded-full text-sm ${
           isToday
             ? "bg-blue-700 font-bold text-white"
-            : `${weekdayTextClass(getWeekdayIndex(date))} ${count > 0 ? "font-bold" : "font-medium"}`
+            : `${weekdayTextClass(getWeekdayIndex(date))} ${hasJournals ? "font-bold" : "font-medium"}`
         }`}
       >
         {day}
       </span>
-      {count > 0 && (
+      {hasJournals && (
         <span className="rounded-md border border-blue-800 bg-white px-1.5 text-xs font-semibold leading-5 text-blue-800">
           {count}
           <span className="hidden sm:inline">件</span>
